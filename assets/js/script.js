@@ -1,31 +1,37 @@
 // Retrieve tasks and nextId from localStorage
-let taskList = JSON.parse(localStorage.getItem("tasks"));
-let nextId = JSON.parse(localStorage.getItem("nextId"));
+let taskList = JSON.parse(localStorage.getItem("tasks")) || [];
+let nextId = parseInt(localStorage.getItem("nextId")) || null;
+let taskForm = $("#taskForm");
+let taskTitle = $("#taskTitle");
+let taskDescription = $("#taskDescription");
+let dueDate = $("#dueDate");
 
-// Todo: create a function to generate a unique task id
+// Todo: create a function to generate a unique task id 
 function generateTaskId() {
-    const newTask = {
-    title: taskTitle,
-    description: taskDescription,
-    dueDate: taskDate,
-    status: 'to-do'
-    }
+   if (nextId === null) {
+    nextId = 1
+   } else {
+     nextId++
+   }
+   localStorage.setItem("nextId", nextId);
+   return nextId;
 }
 
 // Todo: create a function to create a task card
 function createTaskCard(task) {
+    console.log(task);
     const taskCard = $('<div>')
     .addClass('card project-card draggable my-3')
     .attr('data-task-id', task.id);
-    const cardHeader = $('<div>').addClass('card-header h4').text(task.name);
+    const cardHeader = $('<div>').addClass('card-header h4').text(task.title);
     const cardBody = $('<div>').addClass('card-body');
     const cardDeleteBtn = $('<button>')
     .addClass('btn btn-danger delete')
     .text ('Delete')
-    .attr('data-project-id', project.id);
-    cardDeleteBtn.on('click', handleDeleteProject);
+    .attr('data-task-id', task.id);
+    cardDeleteBtn.on('click', handleDeleteTask);
     
-    cardBody.append(cardDescription, cardDeleteBtn);
+    cardBody.append(cardBody, cardDeleteBtn);
     taskCard.append(cardHeader, cardBody);
 
     return taskCard;
@@ -66,37 +72,43 @@ function renderTaskList() {
         },
       });
 }
-
+function readTasksFromStorage () {
+    return taskList;
+}
+function saveTasksToStorage (tasks) {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
 // Todo: create a function to handle adding a new task
 function handleAddTask(event){
     event.preventDefault();
-    const taskTitle = taskTitleInputEl.val().trim();
-  const taskDescription = taskDescriptionInputEl.val();
-  const taskDate = taskDateInputEl.val();
+//     const taskTitle = taskTitleInputEl.val().trim();
+//   const taskDescription = taskDescriptionInputEl.val();
+//   const taskDate = taskDateInputEl.val();
 
   const newTask = {
-    title: taskTitle,
-    description: taskDescription,
-    dueDate: taskDate,
-    status: 'to-do'
+    title: taskTitle.val(),
+    description: taskDescription.val(),
+    dueDate: dueDate.val(),
+    status: 'to-do',
+    id: generateTaskId()
 };
 const tasks = readTasksFromStorage();
 tasks.push(newTask);
 
 saveTasksToStorage(tasks);
 
-printTaskData();
+renderTaskList();
 
-taskTitleInputEl.val('');
-taskDescriptionInput.val('');
-taskDateInput.val('');
+taskTitle.val('');
+taskDescription.val('');
+dueDate.val('');
 }
 
 // Todo: create a function to handle deleting a task
 function handleDeleteTask(event){
     event.preventDefault();
     const thisTaskId = $(this).attr('data-task-id');
-    const tasks = readStoredTasks();
+    const tasks = readTasksFromStorage();
 
     for (let i=0; i < tasks.length; i++) {
         if (tasks[i].id === thisTaskId) {
@@ -109,7 +121,7 @@ function handleDeleteTask(event){
 
 // Todo: create a function to handle dropping a task into a new status lane
 function handleDrop(event, ui) {
-    const taskcard = readTaskcardFromStorage();
+    const taskcard = readTasksFromStorage();
     const taskId = ui.draggable[0].dataset.taskId;
     const newStatus = event.target.id;
 
@@ -123,9 +135,9 @@ function handleDrop(event, ui) {
 }
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
-taskListEl.on('addTask', handletaskListaddTask);
+taskForm.on('submit', handleAddTask);
 
-nextIdEl.on('click', '.btn-delete-task', handleDeleteTask)
+// nextId.on('click', '.btn-delete-task', handleDeleteTask)
 
 $(document).ready(function () {
     // datepicker
