@@ -31,7 +31,7 @@ function createTaskCard(task) {
     .attr('data-task-id', task.id);
     cardDeleteBtn.on('click', handleDeleteTask);
     
-    cardBody.append(cardBody, cardDeleteBtn);
+    cardBody.append(cardDescription, cardDueDate, cardDeleteBtn);
     taskCard.append(cardHeader, cardBody);
 
     return taskCard;

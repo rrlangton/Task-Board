@@ -8,8 +8,6 @@ This is a simple task board application that allows a team to manage project tas
 
 ![A user adds three tasks to the task board and changes the state of two of them to in progress and then completion. The user then deletes the two cards in the done column.](./Assets/05-third-party-apis-homework-demo.gif)
 
-### Github Repo:
-
 
 ### Sources: 
 
