@@ -67,7 +67,7 @@ function renderTaskList() {
         ? $(e.target)
         : $(e.target).closest('.ui-draggable')
         return original.clone().css({
-            width: original.outerWidth(),
+            maxWidth: original.outerWidth(),
           });
         },
       });
@@ -121,17 +121,20 @@ function handleDeleteTask(event){
 
 // Todo: create a function to handle dropping a task into a new status lane
 function handleDrop(event, ui) {
-    const taskcard = readTasksFromStorage();
     const taskId = ui.draggable[0].dataset.taskId;
     const newStatus = event.target.id;
+    console.log(taskcard);
 
-    for (let task of taskcard) {
-        if (taskcard.id === taskId) {
-            taskcard.status = newStatus;
+let taskList = JSON.parse(localStorage.getItem("tasks")) || [];
+    for (let task of taskList) {
+        console.log(task.id,taskId);
+        if (task.id === taskId) {
+            task.status = newStatus;
         }
     }
-    localStorage.setItem('tasks', JSON.stringify(tasks));
+    localStorage.setItem('tasks', JSON.stringify(taskList));
     printProjectData();
+    renderTaskList();
 }
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
@@ -141,6 +144,7 @@ taskForm.on('submit', handleAddTask);
 
 $(document).ready(function () {
     // datepicker
+    renderTaskList();
 $('#duedate').datepicker({
     changeMonth: true,
     changeYear: true,
