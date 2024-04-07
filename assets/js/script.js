@@ -30,6 +30,18 @@ function createTaskCard(task) {
     .text ('Delete')
     .attr('data-task-id', task.id);
     cardDeleteBtn.on('click', handleDeleteTask);
+
+     // set card background color based on due date
+  if (task.dueDate && task.status !== 'done') {
+    const now = dayjs();
+    const taskDueDate = dayjs(task.dueDate, 'DD/MM/YYYY');
+    if (now.isSame(taskDueDate, 'day')) {
+      taskCard.addClass('bg-warning text-white');
+    } else if (now.isAfter(taskDueDate)) {
+      taskCard.addClass('bg-danger text-white');
+      cardDeleteBtn.addClass('border-light');
+    }
+  }
     
     cardBody.append(cardDescription, cardDueDate, cardDeleteBtn);
     taskCard.append(cardHeader, cardBody);
@@ -127,8 +139,8 @@ function handleDrop(event, ui) {
 
 let taskList = JSON.parse(localStorage.getItem("tasks")) || [];
     for (let task of taskList) {
-        console.log(task.id,taskId);
-        if (task.id === taskId) {
+        // console.log(task.id,taskId);
+        if (task.id === parseInt(taskId)) {
             task.status = newStatus;
         }
     }
